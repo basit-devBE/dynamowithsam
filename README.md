@@ -36,13 +36,13 @@ stack. No IAM role, S3 bucket, or workflow is shared between the two.
 ## Bootstrapping (already done for this repo)
 
 ```bash
-sam pipeline bootstrap --stage dev  --no-interactive --region eu-north-1 \
+sam pipeline bootstrap --stage dev  --no-interactive --region eu-central-1 \
   --permissions-provider oidc --cicd-provider github-actions \
   --oidc-provider-url https://token.actions.githubusercontent.com \
   --oidc-client-id sts.amazonaws.com \
   --github-org basit-devBE --github-repo dynamowithsam --deployment-branch develop
 
-sam pipeline bootstrap --stage prod --no-interactive --region eu-north-1 \
+sam pipeline bootstrap --stage prod --no-interactive --region eu-central-1 \
   --permissions-provider oidc --cicd-provider github-actions \
   --oidc-provider-url https://token.actions.githubusercontent.com \
   --oidc-client-id sts.amazonaws.com \
@@ -54,7 +54,7 @@ Both bootstraps reuse the account's existing GitHub OIDC provider
 
 ## Verifying in the AWS Console
 
-1. Open **DynamoDB → Tables** in `eu-north-1` and select `Orders-dev` or `Orders-prod`.
+1. Open **DynamoDB → Tables** in `eu-central-1` and select `Orders-dev` or `Orders-prod`.
 2. **Insert an item**: Explore table items → Create item → fill in `orderId`,
    `customerId`, `status` (e.g. `orderId=ord-001`, `customerId=cust-42`, `status=PLACED`) → Create.
 3. **Query the base table**: Explore table items → Query → partition key `orderId`.

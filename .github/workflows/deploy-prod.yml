@@ -13,11 +13,11 @@ permissions:
   contents: read
 
 env:
-  AWS_REGION: eu-north-1
+  AWS_REGION: eu-central-1
   STACK_NAME: orders-table-prod
-  ARTIFACTS_BUCKET: aws-sam-cli-managed-prod-pipeline--artifactsbucket-tc0fg20knw0p
-  PIPELINE_EXECUTION_ROLE: arn:aws:iam::124355645722:role/aws-sam-cli-managed-prod-pipe-PipelineExecutionRole-pNy18kq3ERq3
-  CLOUDFORMATION_EXECUTION_ROLE: arn:aws:iam::124355645722:role/aws-sam-cli-managed-prod--CloudFormationExecutionRo-VkDIN80O9HM9
+  ARTIFACTS_BUCKET: aws-sam-cli-managed-prod-pipeline--artifactsbucket-8bkokkwuewpj
+  PIPELINE_EXECUTION_ROLE: arn:aws:iam::124355645722:role/aws-sam-cli-managed-prod-pipe-PipelineExecutionRole-sYhGRfj9klG0
+  CLOUDFORMATION_EXECUTION_ROLE: arn:aws:iam::124355645722:role/aws-sam-cli-managed-prod--CloudFormationExecutionRo-xKmhlbytxKoI
 
 jobs:
   deploy-prod:
