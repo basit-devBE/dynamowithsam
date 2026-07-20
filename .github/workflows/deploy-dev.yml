@@ -1,0 +1,51 @@
+name: Deploy Dev
+
+on:
+  push:
+    branches:
+      - develop
+    paths:
+      - template.yaml
+      - .github/workflows/deploy-dev.yml
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AWS_REGION: eu-north-1
+  STACK_NAME: orders-table-dev
+  ARTIFACTS_BUCKET: aws-sam-cli-managed-dev-pipeline-r-artifactsbucket-bnducjenodez
+  PIPELINE_EXECUTION_ROLE: arn:aws:iam::124355645722:role/aws-sam-cli-managed-dev-pipel-PipelineExecutionRole-FUrQAhTQKQAx
+  CLOUDFORMATION_EXECUTION_ROLE: arn:aws:iam::124355645722:role/aws-sam-cli-managed-dev-p-CloudFormationExecutionRo-o4lfsqlvyj7Q
+
+jobs:
+  deploy-dev:
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: aws-actions/setup-sam@v2
+
+      - name: Assume dev pipeline execution role
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.PIPELINE_EXECUTION_ROLE }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: sam build
+        run: sam build --template template.yaml
+
+      - name: sam deploy (dev)
+        run: |
+          sam deploy \
+            --stack-name "$STACK_NAME" \
+            --s3-bucket "$ARTIFACTS_BUCKET" \
+            --s3-prefix "$STACK_NAME" \
+            --region "$AWS_REGION" \
+            --capabilities CAPABILITY_IAM \
+            --role-arn "$CLOUDFORMATION_EXECUTION_ROLE" \
+            --parameter-overrides Environment=dev \
+            --no-confirm-changeset \
+            --no-fail-on-empty-changeset

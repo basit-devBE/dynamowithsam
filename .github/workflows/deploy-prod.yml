@@ -1,0 +1,51 @@
+name: Deploy Prod
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - template.yaml
+      - .github/workflows/deploy-prod.yml
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AWS_REGION: eu-north-1
+  STACK_NAME: orders-table-prod
+  ARTIFACTS_BUCKET: aws-sam-cli-managed-prod-pipeline--artifactsbucket-tc0fg20knw0p
+  PIPELINE_EXECUTION_ROLE: arn:aws:iam::124355645722:role/aws-sam-cli-managed-prod-pipe-PipelineExecutionRole-pNy18kq3ERq3
+  CLOUDFORMATION_EXECUTION_ROLE: arn:aws:iam::124355645722:role/aws-sam-cli-managed-prod--CloudFormationExecutionRo-VkDIN80O9HM9
+
+jobs:
+  deploy-prod:
+    runs-on: ubuntu-latest
+    environment: prod
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: aws-actions/setup-sam@v2
+
+      - name: Assume prod pipeline execution role
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.PIPELINE_EXECUTION_ROLE }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: sam build
+        run: sam build --template template.yaml
+
+      - name: sam deploy (prod)
+        run: |
+          sam deploy \
+            --stack-name "$STACK_NAME" \
+            --s3-bucket "$ARTIFACTS_BUCKET" \
+            --s3-prefix "$STACK_NAME" \
+            --region "$AWS_REGION" \
+            --capabilities CAPABILITY_IAM \
+            --role-arn "$CLOUDFORMATION_EXECUTION_ROLE" \
+            --parameter-overrides Environment=prod \
+            --no-confirm-changeset \
+            --no-fail-on-empty-changeset
