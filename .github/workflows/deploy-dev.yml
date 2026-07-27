@@ -15,9 +15,8 @@ permissions:
 env:
   AWS_REGION: eu-central-1
   STACK_NAME: orders-table-dev
-  ARTIFACTS_BUCKET: aws-sam-cli-managed-dev-pipeline-r-artifactsbucket-odsz7jsyppjk
-  PIPELINE_EXECUTION_ROLE: arn:aws:iam::124355645722:role/aws-sam-cli-managed-dev-pipel-PipelineExecutionRole-oOoH7UGK5hN5
-  CLOUDFORMATION_EXECUTION_ROLE: arn:aws:iam::124355645722:role/aws-sam-cli-managed-dev-p-CloudFormationExecutionRo-duhcStgKZNRl
+  ARTIFACTS_BUCKET: ${{ vars.DEV_ARTIFACTS_BUCKET }}
+  CLOUDFORMATION_EXECUTION_ROLE: ${{ secrets.DEV_CLOUDFORMATION_EXECUTION_ROLE_ARN }}
 
 jobs:
   deploy-dev:
@@ -30,7 +29,7 @@ jobs:
       - name: Assume dev pipeline execution role
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ env.PIPELINE_EXECUTION_ROLE }}
+          role-to-assume: ${{ secrets.DEV_PIPELINE_EXECUTION_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: sam build

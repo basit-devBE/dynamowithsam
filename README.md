@@ -52,6 +52,33 @@ sam pipeline bootstrap --stage prod --no-interactive --region eu-central-1 \
 Both bootstraps reuse the account's existing GitHub OIDC provider
 (`token.actions.githubusercontent.com`) instead of creating a duplicate.
 
+## Secrets and variables
+
+Nothing in the workflow files is hardcoded. Values read from the bootstrap output above
+are stored as repo-level GitHub Actions secrets/variables and referenced from
+`deploy-dev.yml` / `deploy-prod.yml`:
+
+| Name | Kind | Holds |
+|---|---|---|
+| `DEV_PIPELINE_EXECUTION_ROLE_ARN` | Secret | Dev pipeline execution role ARN (assumed via OIDC) |
+| `DEV_CLOUDFORMATION_EXECUTION_ROLE_ARN` | Secret | Dev CloudFormation execution role ARN |
+| `DEV_ARTIFACTS_BUCKET` | Variable | Dev artifacts S3 bucket name |
+| `PROD_PIPELINE_EXECUTION_ROLE_ARN` | Secret | Prod pipeline execution role ARN (assumed via OIDC) |
+| `PROD_CLOUDFORMATION_EXECUTION_ROLE_ARN` | Secret | Prod CloudFormation execution role ARN |
+| `PROD_ARTIFACTS_BUCKET` | Variable | Prod artifacts S3 bucket name |
+
+Role ARNs are secrets (they embed the account ID); the bucket names aren't sensitive, so
+they're plain variables. Region and stack name stay as plain workflow config since they
+aren't secrets and don't need to be looked up per environment. Re-populate these after a
+fresh bootstrap with:
+
+```bash
+gh secret set DEV_PIPELINE_EXECUTION_ROLE_ARN --body "<arn>"
+gh secret set DEV_CLOUDFORMATION_EXECUTION_ROLE_ARN --body "<arn>"
+gh variable set DEV_ARTIFACTS_BUCKET --body "<bucket-name>"
+# ...and the PROD_ equivalents
+```
+
 ## Verifying in the AWS Console
 
 1. Open **DynamoDB → Tables** in `eu-central-1` and select `Orders-dev` or `Orders-prod`.

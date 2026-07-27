@@ -15,9 +15,8 @@ permissions:
 env:
   AWS_REGION: eu-central-1
   STACK_NAME: orders-table-prod
-  ARTIFACTS_BUCKET: aws-sam-cli-managed-prod-pipeline--artifactsbucket-8bkokkwuewpj
-  PIPELINE_EXECUTION_ROLE: arn:aws:iam::124355645722:role/aws-sam-cli-managed-prod-pipe-PipelineExecutionRole-sYhGRfj9klG0
-  CLOUDFORMATION_EXECUTION_ROLE: arn:aws:iam::124355645722:role/aws-sam-cli-managed-prod--CloudFormationExecutionRo-xKmhlbytxKoI
+  ARTIFACTS_BUCKET: ${{ vars.PROD_ARTIFACTS_BUCKET }}
+  CLOUDFORMATION_EXECUTION_ROLE: ${{ secrets.PROD_CLOUDFORMATION_EXECUTION_ROLE_ARN }}
 
 jobs:
   deploy-prod:
@@ -30,7 +29,7 @@ jobs:
       - name: Assume prod pipeline execution role
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ env.PIPELINE_EXECUTION_ROLE }}
+          role-to-assume: ${{ secrets.PROD_PIPELINE_EXECUTION_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: sam build
