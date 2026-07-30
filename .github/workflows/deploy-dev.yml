@@ -13,8 +13,8 @@ permissions:
   contents: read
 
 env:
-  AWS_REGION: eu-central-1
-  STACK_NAME: orders-table-dev
+  AWS_REGION: ${{ vars.AWS_REGION }}
+  STACK_NAME: ${{ vars.DEV_STACK_NAME }}
   ARTIFACTS_BUCKET: ${{ vars.DEV_ARTIFACTS_BUCKET }}
   CLOUDFORMATION_EXECUTION_ROLE: ${{ secrets.DEV_CLOUDFORMATION_EXECUTION_ROLE_ARN }}
 

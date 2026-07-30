@@ -63,20 +63,25 @@ are stored as repo-level GitHub Actions secrets/variables and referenced from
 | `DEV_PIPELINE_EXECUTION_ROLE_ARN` | Secret | Dev pipeline execution role ARN (assumed via OIDC) |
 | `DEV_CLOUDFORMATION_EXECUTION_ROLE_ARN` | Secret | Dev CloudFormation execution role ARN |
 | `DEV_ARTIFACTS_BUCKET` | Variable | Dev artifacts S3 bucket name |
+| `DEV_STACK_NAME` | Variable | Dev CloudFormation stack name |
 | `PROD_PIPELINE_EXECUTION_ROLE_ARN` | Secret | Prod pipeline execution role ARN (assumed via OIDC) |
 | `PROD_CLOUDFORMATION_EXECUTION_ROLE_ARN` | Secret | Prod CloudFormation execution role ARN |
 | `PROD_ARTIFACTS_BUCKET` | Variable | Prod artifacts S3 bucket name |
+| `PROD_STACK_NAME` | Variable | Prod CloudFormation stack name |
+| `AWS_REGION` | Variable | Shared region for both environments |
 
-Role ARNs are secrets (they embed the account ID); the bucket names aren't sensitive, so
-they're plain variables. Region and stack name stay as plain workflow config since they
-aren't secrets and don't need to be looked up per environment. Re-populate these after a
-fresh bootstrap with:
+Role ARNs are secrets (they embed the account ID); everything else (bucket names, stack
+names, region) isn't sensitive, so those are plain variables. Nothing is hardcoded in
+either workflow file. Re-populate these after a fresh bootstrap with:
 
 ```bash
 gh secret set DEV_PIPELINE_EXECUTION_ROLE_ARN --body "<arn>"
 gh secret set DEV_CLOUDFORMATION_EXECUTION_ROLE_ARN --body "<arn>"
 gh variable set DEV_ARTIFACTS_BUCKET --body "<bucket-name>"
-# ...and the PROD_ equivalents
+gh variable set AWS_REGION --body "eu-central-1"
+gh variable set DEV_STACK_NAME --body "orders-table-dev"
+gh variable set PROD_STACK_NAME --body "orders-table-prod"
+# ...and the PROD_ role/bucket equivalents
 ```
 
 ## Verifying in the AWS Console
